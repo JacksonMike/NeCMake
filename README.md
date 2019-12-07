@@ -54,13 +54,160 @@ set(list_var "1;2;3;4;5")
 message("list_var = ${list_var}")
 ```
 
-### 1.6 CMake流程控制
-#### 1.6.1 操作符 
+## 二、CMake流程控制
+### 2.1 操作符 （大小写敏感）
 类型 | 名称
 --  | ---
 一元 | EXIST,COMMAND,DEFINED
-二元 | EQUAL,LESS,LESS_EQUAL,GREATER,GREATER_EQUAL,STREQUAL,STRLESS,STRLESS_EQUAL,
-STRGREATER,STRGREATER_EQUAL,VERSION_EQUAL_VERSION_LESSS,VERSION_LESS_EQUAL,VERSION_GREATER,
-VERSION_GREATER_EQUAL,MATCHES
-逻辑 | NOT,AND,OR
+二元 | EQUAL,LESS,LESS_EQUAL,GREATER,GREATER_EQUAL,STREQUAL,STRLESS,STRLESS_EQUAL,STRGREATER,STRGREATER_EQUAL,VERSION_EQUAL_VERSION_LESSS,VERSION_LESS_EQUAL,VERSION_GREATER,VERSION_GREATER_EQUAL,MATCHES
+逻辑 | NOT,AND,OR  
 
+优先级： () > 一元 > 二元 > 逻辑  
+### 2.2 布尔常量值 （大小写敏感） 
+类型  | 值 
+--   | -- 
+true | 1,ON,YES,TRUE,Y,非0的值
+false| 0,OFF,NO,FALSE,N,IGNORE,NOTFOUND,空字符串,以-NOTFOUND结尾的字符串  
+
+### 2.3 条件命令 
+> 语法格式：  
+> if(表达式)  
+>       COMMAND(ARGS...)  
+> elseif(表达式)  
+>       COMMAND(ARGS...)  
+> else(表达式)  
+>       COMMAND(ARGS...)  
+> endif(表达式)   
+>  
+> elseif和else部分是可选的，也可以有多个elseif部分，缩进和空格对语句解析没有影响。  
+  
+```cmake
+set(if_tap 0FF)
+set(elseif_tap ON)
+
+if(${if_tap})
+    message(WARNING "if")
+elseif(${elseif_tap})
+    message(WARNING "elseif")
+else(${if_tap})
+    message(WARNING "else")
+endif(${if_tap)
+```
+
+### 2.4 循环遍历-while
+> 语法格式：  
+> while(表达式)  
+>       COMMAND(ARGS...)  
+> endwhile(表达式)  
+>  
+> break()命令可以跳出整个循环，continue()可以跳出当前循环  
+```cmake
+set(a "")
+
+while(NOT a STREQUAL "xxx")
+    set(a "${a}x")
+    message(WARNING "a = ${a}")
+endwhile()
+```
+
+### 2.5 循环遍历-foreach
+#### 2.5.1 foreach循环变量 + 参数1 参数2... 参数N
+> 语法格式：  
+> foreach(循环变量 参数1 参数2 ... 参数N)  
+>       COMMAND(ARGS...)  
+> endforeach(循环变量)  
+>  
+> 每次迭代设置循环变量为参数。  
+> foreach也支持break()和continue()命令跳出循环。  
+```cmake
+foreach(item 1 2 3)
+    message(WARNING "item = ${item}")
+endforeach(item)
+```
+#### 2.5.2 foreach循环变量 + RANGE total
+> 语法格式：  
+> foreach(循环变量 RANGE total)  
+>       COMMAND(ARGS...)  
+> endforeach(循环变量)  
+>  
+> 此种方式的取值范围为[0, total]   
+```cmake
+foreach(item2 RANGE 3)
+    message(WARNING "item2 = ${item2}")
+endforeach(item2)
+```
+#### 2.5.3 foreach循环变量 + RANGE start stop step
+> 语法格式：  
+> foreach(循环变量 RANGE start stop step)  
+>       COMMAND(ARGS...)  
+> endforeach(循环变量)  
+>  
+> 循环范围为[start, stop],循环增量为step。   
+```cmake
+foreach(item3 RANGE 1 5 2)
+    message(WARNING "item3 = ${item3}")
+endforeach(item3)
+```
+#### 2.5.4 foreach循环变量 + IN LISTS 列表
+> 语法格式：  
+> foreach(循环变量 IN LISTS 列表)  
+>       COMMAND(ARGS...)  
+> endforeach(循环变量)    
+```cmake
+set(list_var 1 2 3)
+
+foreach(item4 IN LISTS list_var)
+    message(WARNING "item4 = ${item4}")
+endforeach(item4)
+```  
+
+## 三、CMake函数、宏及变量作用域
+### 3.1 CMake自定义函数命令
+> 自定义函数命令格式：  
+> function(<name>[arg1 [arg2 [arg3 ...]]])  
+>       COMMAND()  
+> endfunction(<name>)  
+
+> 函数命令调用格式：  
+> name(实参列表)  
+```cmake
+function(func x y z)
+    message(WARNING "call function func")
+    message(WARNING "x = ${x}")     # x = 1
+    message(WARNING "y = ${y}")     # y = 2
+    message(WARNING "z = ${z}")     # z = 3
+    message(WARNING "ARGC = ${ARGC}")   # ARGC = 3
+    message(WARNING "arg1 = ${ARGV0} arg2 = ${ARGV1} arg3 = ${ARGV2}")  # arg1 = 1 arg2 = 2 arg3 = 3
+    message(WARNING "all args = ${ARGV}")   # all args = 1;2;3
+    endfunction(func)
+    
+func(1 2 3)
+```
+
+### 3.2 CMake自定义宏命令
+> 自定义宏命令格式：  
+> macro(<name>[arg1 [arg2 [arg3 ...]]])  
+>       COMMAND()  
+> endmacro(<name>)  
+
+> 宏命令调用格式：  
+> name(实参列表)  
+```cmake
+macro(ma x y z)
+    message(WARNING "call macro ma")
+    message(WARNING "x = ${x}")     # x = 1
+    message(WARNING "y = ${y}")     # y = 2
+    message(WARNING "z = ${z}")     # z = 3
+    message(WARNING "ARGC = ${ARGC}")   # ARGC = 3
+    message(WARNING "arg1 = ${ARGV0} arg2 = ${ARGV1} arg3 = ${ARGV2}")  # arg1 = 1 arg2 = 2 arg3 = 3
+    message(WARNING "all args = ${ARGV}")   # all args = 1;2;3
+    endmacro(func)
+    
+ma(1 2 3)
+```
+
+### 3.3 CMake变量的作用域
+优先级：函数层 > 目录层 > 全局层  
+> 全局层：cache变量，在整个项目范围内可见，一般在set定义变量时，指定CACHE参数就能定义为cache变量。  
+> 目录层：在当前目录CMakeLists.txt中定义，以及在该文件包含的其它CMake源文件中定义的变量。  
+> 函数层：在命令函数中定义的变量，属于函数作用域内的变量。

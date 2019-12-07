@@ -5,6 +5,9 @@
 
 cmake_minimum_required(VERSION 3.4.1)
 
+
+
+
 # message([<mode>] "message to display" ...)
 # <mode>关键字，可以指定消息的类型：
 # (none)         = 重要消息
@@ -15,12 +18,59 @@ cmake_minimum_required(VERSION 3.4.1)
 # FATAL_ERROR    = CMake错误，停止处理和生成
 # DEPRECATION    = 如果分别启用了变量CMAKE_ERROR_DEPRECATED或CMAKE_WARN_DEPRECATED，则CMake弃用错误或警告，否则无消息
 
-set(var 11123)
-# 如果想直接看到打印信息，使用 WARNING 以上的级别进行打印。
-message(WARNING "var = ${var}")
+#set(var 11123)
+## 如果想直接看到打印信息，使用 WARNING 以上的级别进行打印。
+#message(WARNING "var = ${var}")
+#
+#set(list_var 1 2 3 4 5)
+#message(WARNING "list_var: ${list_var}")
+#
+#while(NOT a STREQUAL "xxx")
+#    set(a "${a}x")
+#    message(WARNING "a = ${a}")
+#endwhile()
+#
+#foreach(item 1 2 3)
+#    message(WARNING "item = ${item}")
+#endforeach(item)
 
-set(list_var 1 2 3 4 5)
-message(WARNING "list_var: ${list_var}")
+#foreach(item2 RANGE 3)
+#    message(WARNING "item2 = ${item2}")
+#endforeach(item2)
+
+#foreach(item3 RANGE 1 5 2)
+#    message(WARNING "item3 = ${item3}")
+#endforeach(item3)
+
+#set(list_var 1 2 3)
+#
+#foreach(item4 IN LISTS list_var)
+#    message(WARNING "item4 = ${item4}")
+#endforeach(item4)
+
+#function(func x y z)
+#    message(WARNING "call function func")
+#    message(WARNING "x = ${x}")     # x = 1
+#    message(WARNING "y = ${y}")     # y = 2
+#    message(WARNING "z = ${z}")     # z = 3
+#    message(WARNING "ARGC = ${ARGC}")   # ARGC = 3
+#    message(WARNING "arg1 = ${ARGV0} arg2 = ${ARGV1} arg3 = ${ARGV2}")  # arg1 = 1 arg2 = 2 arg3 = 3
+#    message(WARNING "all args = ${ARGV}")   # all args = 1;2;3
+#endfunction(func)
+#
+#func(1 2 3)
+
+macro(ma x y z)
+    message(WARNING "call macro ma")
+    message(WARNING "x = ${x}")
+    message(WARNING "y = ${y}")
+    message(WARNING "z = ${z}")
+    message(WARNING "ARGC = ${ARGC}")
+    message(WARNING "arg1 = ${ARGV0} arg2 = ${ARGV1} arg3 = ${ARGV2}")
+    message(WARNING "all args = ${ARGV}")
+endmacro(func)
+
+ma(1 2 3)
 
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
