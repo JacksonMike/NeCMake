@@ -19,6 +19,9 @@ set(var 11123)
 # 如果想直接看到打印信息，使用 WARNING 以上的级别进行打印。
 message(WARNING "var = ${var}")
 
+set(list_var 1 2 3 4 5)
+message(WARNING "list_var: ${list_var}")
+
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
 # You can define multiple libraries, and CMake builds them for you.
